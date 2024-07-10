@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: customers
+  - name: dim_customers
     description: One record per customer
     columns:
       - name: customer_id
@@ -12,8 +12,8 @@ models:
       - name: first_order_date
         description: NULL when a customer has not yet placed an order.
 
-  - name: stg_customers
-    description: This model cleans up customer data
+  - name: stg_jaffle_shop__customers
+    description: one unique custumer per row
     columns:
       - name: customer_id
         description: Primary key
@@ -21,8 +21,8 @@ models:
           - unique
           - not_null
 
-  - name: stg_orders
-    description: This model cleans up order data
+  - name: stg_jaffle_shop__orders
+    description: one order per row
     columns:
       - name: order_id
         description: Primary key
@@ -30,6 +30,7 @@ models:
           - unique
           - not_null
       - name: status
+        description: "{{ doc('order_status') }}"
         data_tests:
           - accepted_values:
               values: ['placed', 'shipped', 'completed', 'return_pending', 'returned']
@@ -37,5 +38,10 @@ models:
         data_tests:
           - not_null
           - relationships:
-              to: ref('stg_customers')
+              to: ref('stg_jaffle_shop__customers')
               field: customer_id
+  
+  - name: stg_stripe__payments
+    columns:
+    - name: order_id
+      description: Primary key
